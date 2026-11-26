@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=4"><meta name="color-scheme" content="light"><title>Graph Atlas · Knowledge network</title>
+<style>
+:root{font-family:"Aptos","Segoe UI",Arial,sans-serif;color:#253239;background:#fff;--ink:#24333b;--faint:#e0e5e5;--muted:#617277;--ring:#287a83;--shadow:0 5px 22px #223b4810,0 1px 3px #223b480c}*{box-sizing:border-box}html,body,.app{margin:0;width:100%;height:100%;overflow:hidden}body{min-width:280px}button,input{font:inherit}button{cursor:pointer;color:var(--ink)}button,input{outline:none}button:focus-visible,input:focus-visible,summary:focus-visible,canvas:focus-visible{outline:2px solid var(--ring);outline-offset:2px}button:disabled{opacity:.4;cursor:default}[hidden]{display:none!important}.app{display:flex;flex-direction:column}.head{height:54px;flex:0 0 54px;display:flex;align-items:center;gap:20px;padding:0 22px;border-bottom:1px solid #e2e7e7;z-index:5;background:#fff}.brand{height:auto;width:122px;flex:none;display:block}.head h1{margin:0 0 0 -3px;padding-left:18px;border-left:1px solid #d7dede;font:bold 19px/1.1 Georgia,serif;letter-spacing:-.045em;white-space:nowrap;color:#23343a}.headcounts{margin-left:auto;display:flex;gap:17px;align-items:center;font-size:12px;color:#5e7076}.headcounts b{font-weight:650;color:#283f47;font-variant-numeric:tabular-nums}.stage{flex:1;min-height:0;position:relative;background:white;overflow:hidden}.canvas,.highlight{position:absolute;inset:0;width:100%;height:100%;display:block}.canvas{touch-action:none;cursor:grab}.canvas.dragging{cursor:grabbing}.canvas.targeting{cursor:pointer}.highlight{pointer-events:none}.panel{background:rgba(255,255,255,.96);border:1px solid #dbe2e2;border-radius:8px;box-shadow:var(--shadow)}.searchwrap{position:absolute;left:16px;top:13px;width:min(290px,43vw);z-index:4}.searchbar{height:37px;display:flex;align-items:center;gap:7px;padding:0 9px;color:#74848a}.searchbar svg{width:16px;height:16px;flex:none}.searchbar input{border:0;background:transparent;color:var(--ink);width:100%;font-size:13px;height:100%;min-width:0}.searchbar input:focus-visible{outline:none}.searchbar:focus-within{border-color:#61949f}.key{font:11px/17px ui-monospace,monospace;color:#8c999d;border:1px solid #e4e9e9;border-radius:3px;padding:0 4px}.results{margin-top:5px;max-height:min(56vh,470px);overflow:auto;padding:4px;scrollbar-width:thin}.opt{border:0;background:transparent;text-align:left;width:100%;display:flex;align-items:start;gap:9px;border-radius:4px;padding:9px 7px;font-size:12px;line-height:1.35}.opt:hover,.opt[aria-selected=true]{background:#eef5f5}.opt i,.dot{flex:none;width:8px;height:8px;border-radius:50%;display:inline-block;background:var(--dot,#69838a)}.opt i{margin-top:4px}.opt strong{display:block;font-weight:650}.opt small{display:block;color:var(--muted);font-size:10.5px;margin-top:2px}.muted{color:var(--muted);font-size:12px;line-height:1.4}.results .muted{padding:7px 9px;margin:0}
+.icon{border:0;background:none;display:inline-flex;justify-content:center;align-items:center;padding:0;border-radius:4px;width:28px;height:28px;flex:none}.icon svg{width:17px;height:17px;stroke:currentColor;stroke-width:1.55;fill:none}.icon:hover,.icon[aria-pressed=true]{background:#e9f0ef}.tools{position:absolute;bottom:15px;right:16px;display:flex;align-items:center;gap:4px;padding:4px;z-index:2}.tools .divide{width:1px;height:16px;background:var(--faint);margin:0 1px}.zoomval{font-size:11px;color:#5b6c72;text-align:center;min-width:40px;font-variant-numeric:tabular-nums}.legend{position:absolute;bottom:15px;left:16px;min-width:136px;max-width:223px;z-index:2;padding:0 10px}.legendhead{display:flex;align-items:center;gap:6px}.legendToggle{border:0;background:transparent;padding:8px 0;display:flex;align-items:center;gap:6px;font-size:11.5px;letter-spacing:.01em;font-weight:650}.legendToggle b{font-weight:600;font-size:12px;color:#6d7c82}.legendReset{margin-left:auto;font-size:10.5px;padding:2px 3px;border:0;border-radius:4px;background:transparent;color:#34707a}.legendbody{border-top:1px solid #e9ecec;max-height:clamp(92px,23vh,197px);overflow:auto;margin-bottom:7px;padding:4px 0 0;scrollbar-width:thin}.groupbtn{border:0;border-radius:4px;width:100%;background:transparent;display:flex;align-items:center;gap:7px;padding:4px 3px;text-align:left;font-size:11px;line-height:1.2;min-height:20px}.groupbtn:hover,.groupbtn[aria-pressed=true]{background:#eaf1f0}.groupbtn[aria-pressed=true]{font-weight:700}.groupbtn .gname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.groupbtn .gcount{font-size:10px;color:#728388;font-variant-numeric:tabular-nums}.legendstrip{display:flex;gap:3px;margin-left:auto;padding:0 0 0 6px}.legendstrip .dot{width:5px;height:5px}
+.smallpanel{position:absolute;right:16px;top:13px;z-index:5;width:min(235px,calc(100vw - 30px));padding:11px 13px;max-height:calc(100% - 78px);overflow:auto}.smallpanel .smalltitle{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 4px;font-size:13px;font-weight:650}.smallpanel dl{margin:0;display:grid;grid-template-columns:minmax(70px,.8fr) 1.2fr;gap:4px 13px;font-size:11.5px;color:#56676e}.smallpanel dd,.smallpanel dt{margin:0;line-height:1.5}.smallpanel dd{color:#263e47}.smallpanel .scope{margin:8px 0 0;padding-top:7px;border-top:1px solid var(--faint);font-size:11px;color:var(--muted);line-height:1.42}.inspect{position:absolute;right:16px;top:13px;max-height:calc(100% - 74px);width:clamp(265px,26vw,365px);overflow:auto;z-index:3;scrollbar-width:thin;padding:14px 15px;overflow-wrap:anywhere}.topline{display:flex;align-items:center;gap:7px}.topline small{font-size:11px;color:var(--muted);font-weight:600}.topline .icon{margin-left:auto;width:24px;height:24px}.title{font:500 23px/1.13 Georgia,serif;letter-spacing:-.045em;margin:6px 0 6px}.nmeta{font-size:11px;color:#5d7074;line-height:1.45;margin:0 0 9px}.detail{font-size:12px;color:#354951;line-height:1.48;white-space:pre-line;margin:6px 0}.src{font-size:11px;color:#576c72;line-height:1.4;margin:7px 0;padding:7px 0;border-top:1px solid var(--faint)}.src strong{color:#455b60}.connhead{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-top:8px;margin-top:6px;border-top:1px solid var(--faint)}.connhead h3{font-size:12px;margin:0}.connhead span{font-size:10.5px;color:#78898b}.links{margin-top:5px}.edge{border-bottom:1px solid #e9eded;font-size:11.5px}.edge summary{padding:7px 1px;display:flex;align-items:flex-start;gap:6px;cursor:pointer;list-style:none}.edge summary::-webkit-details-marker{display:none}.edge summary:before{content:"›";font-size:14px;color:#799094;transform-origin:center;line-height:1.05}.edge[open] summary:before{transform:rotate(90deg)}.edge summary strong{font-weight:600;display:block}.edge summary small{display:block;color:#60757a;margin-top:1px}.ev{line-height:1.45;color:#4b6167;padding:0 3px 7px 11px}.action{border:1px solid #cddcd9;background:white;border-radius:4px;font-size:11px;padding:4px 7px;color:#245a60}.action:hover{background:#edf4f3}.ev .action{display:block;margin-top:6px}.more{width:100%;margin:6px 0 0}.tip{position:absolute;z-index:6;padding:6px 9px;border:1px solid #cad7d8;background:rgba(255,255,255,.97);box-shadow:var(--shadow);border-radius:5px;max-width:265px;font-size:12px;line-height:1.37;pointer-events:none;overflow-wrap:anywhere}.tip small{display:block;margin-top:2px;color:#63777b}.sr{position:absolute;clip:rect(0,0,0,0);width:1px;height:1px;overflow:hidden;white-space:nowrap}.nodata{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);font-size:14px;color:#66797d}.noscript{position:absolute;top:30%;left:10%;right:10%;text-align:center;color:#5b6b70;font-size:14px}
+@media(max-width:780px){.head{height:47px;flex-basis:47px;padding:0 12px;gap:11px}.brand{width:103px}.head h1{font-size:17px;padding-left:10px}.headcounts{gap:8px;font-size:10.5px}.searchwrap{top:9px;left:9px}.legend{left:9px;bottom:9px}.tools{right:9px;bottom:9px}.inspect,.smallpanel{top:9px;right:9px}.inspect{width:269px}.legendbody{max-height:140px}}
+@media(max-width:590px){.head{height:42px;flex-basis:42px}.brand{width:83px}.head h1{font-size:16px}.headcounts{font-size:10px;gap:6px}.headcounts .nedge{display:none}.searchwrap{width:min(235px,62vw)}.searchbar{height:33px}.legend{min-width:97px;max-width:170px}.legendbody{max-height:100px}.legendstrip{display:none}.tools{gap:1px}.tools .icon{width:25px;height:25px}.zoomval{font-size:9px;min-width:31px}.inspect{left:9px;right:9px;top:auto;bottom:47px;width:auto;max-height:40%;padding:9px 12px}.inspect .title{font-size:19px}.smallpanel{top:48px}.topline .icon{width:21px;height:21px}.key{display:none}.groupbtn{font-size:10px;min-height:18px;padding:3px}}
+@media(max-width:350px){.brand{width:69px}.head h1{font-size:14px}.headcounts{font-size:9px}.tools .icon{width:23px}.legend{max-width:115px}.zoomval{min-width:27px}}
+@media print{@page{size:landscape;margin:5mm}.head{height:38px;flex-basis:38px}.searchwrap,.tools,.inspect,.smallpanel,.tip{display:none!important}.legend{box-shadow:none}.legendbody{max-height:150px}.app{width:100vw;height:95vh}}
+
+.head {
+    height: 56px;
+    flex-basis: 56px;
+    gap: 11px;
+    background: #fff;
+    color: #163245;
+}
+.head .brand {
+    width: 30px;
+    height: 30px;
+    flex: none;
+    border-radius: 7px;
+    display: grid;
+    place-items: center;
+    background: #163245;
+    color: white;
+}
+.brand svg { width: 22px; height: 22px; }
+.head h1 {
+    padding: 0;
+    border: 0;
+    font-size: 22px;
+    letter-spacing: -.04em;
+}
+.demo-note {
+    margin-left: 6px;
+    padding-left: 15px;
+    border-left: 1px solid var(--faint);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+@media (max-width: 620px) {
+    .head { height: 48px; flex-basis: 48px; gap: 8px; }
+    .head h1 { font-size: 19px; }
+    .head .brand { width: 26px; height: 26px; }
+    .brand svg { width: 20px; height: 20px; }
+    .demo-note { display: none; }
+}
+</style></head><body>
+<div class="app"><header class="head"><span class="brand" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m5 16 7-10 7 10M5 16h14M12 6v12" stroke="currentColor" stroke-width="1.5"/><path d="M5 16h.01M12 6h.01M19 16h.01M12 18h.01" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"/></svg></span><h1>Graph Atlas</h1><span class="demo-note">Synthetic field research</span><div class="headcounts"><span><b id="recordCount"></b> records</span><span class="nedge"><b id="linkCount"></b> connections</span></div></header>
+<main id="stage" class="stage"><canvas id="network" class="canvas" tabindex="0" aria-label="Graph Atlas knowledge network. Pan with arrow keys, zoom with plus and minus, or use search to open a record."></canvas><canvas id="hi" class="highlight" aria-hidden="true"></canvas>
+<div class="searchwrap"><div class="searchbar panel"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="5.1"/><path d="m12 12 5 5"/></svg><input id="query" role="combobox" aria-label="Find a record" aria-controls="matches" aria-expanded="false" aria-autocomplete="list" autocomplete="off" spellcheck="false" placeholder="Search stations, datasets, or IDs"><span class="key" aria-hidden="true">/</span></div><div id="matches" class="results panel" role="listbox" hidden></div></div>
+<div id="legend" class="legend panel"><div class="legendhead"><button id="legendToggle" class="legendToggle" aria-controls="legendbody" aria-expanded="true"><b id="caret">⌄</b><span id="groupTitle">Groups</span></button><button id="resetGroup" class="legendReset" hidden>Show all</button><div id="strip" class="legendstrip" aria-hidden="true" hidden></div></div><div class="legendbody" id="legendbody"></div></div>
+<div class="tools panel" aria-label="Map controls"><button class="icon" id="minus" aria-label="Zoom out" title="Zoom out (−)"><svg viewBox="0 0 20 20"><path d="M4 10h12"/></svg></button><span class="zoomval" id="zoomval">100%</span><button class="icon" id="plus" aria-label="Zoom in" title="Zoom in (+)"><svg viewBox="0 0 20 20"><path d="M4 10h12M10 4v12"/></svg></button><span class="divide"></span><button class="icon" id="fit" aria-label="Fit network" title="Fit visible network (F)"><svg viewBox="0 0 20 20"><path d="M7 3H3v4m10-4h4v4M3 13v4h4m10-4v4h-4"/></svg></button><button class="icon" id="labels" aria-label="Toggle record labels" aria-pressed="false" title="Record labels (L)"><svg viewBox="0 0 20 20"><path d="m3 15 4-10 4 10M4.5 12h5M12 9l2 6 3-6"/></svg></button><button class="icon" id="help" aria-label="Map controls and scope" aria-expanded="false" title="Map controls and scope"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.1"/><path d="M10 9v5m0-9v1.4"/></svg></button></div>
+<aside id="helpbox" class="smallpanel panel" hidden><div class="smalltitle">Map controls<button id="closeHelp" class="icon" aria-label="Close map controls">×</button></div><dl><dt>Pan</dt><dd>Drag or arrow keys</dd><dt>Zoom</dt><dd>Scroll, pinch, or + and −</dd><dt>Inspect</dt><dd>Select a dot</dd><dt>Focus a group</dt><dd>Select its legend entry</dd><dt>Find a record</dt><dd>Press /</dd><dt>Fit the map</dt><dd>Press F</dd><dt>Record labels</dt><dd>Press L</dd></dl><p id="scope" class="scope"></p></aside>
+<aside id="inspector" class="inspect panel" aria-label="Record and evidence" hidden></aside><div id="tip" class="tip" hidden></div><div id="empty" class="nodata" hidden>No records with mapped positions.</div><span id="live" class="sr" role="status"></span><noscript><p class="noscript">Open this HTML file in a browser with JavaScript enabled to explore and search the network.</p></noscript>
+</main></div>
+<script type="application/json" id="data">__GRAPH_DATA__</script>
+<script>
+'use strict';
+
+// Read the embedded graph and prepare indexed canvas data.
+const D = JSON.parse(document.getElementById('data').textContent);
+const $ = s => document.getElementById(s), canvas = $('network'), hi = $('hi'), stage = $('stage');
+const ctx = canvas.getContext('2d', {alpha: false}), hctx = hi.getContext('2d');
+const N = D.nodes || [], E = D.edges || [], groupById = new Map(), byId = new Map(), nd = N.length;
+const xs = new Float64Array(nd), ys = new Float64Array(nd), rad = new Float32Array(nd), groupIdx = new Int32Array(nd).fill(- 1), active = new Uint8Array(nd), ad = Array.from({length: nd}, () => []), edges = [], items = [], groups = [], queries = [];
+const num = n => Number(n).toLocaleString('en-US');
+const str = v => v == null ? '': typeof v === 'object' ? (Array.isArray(v) ? v.map(str).join(' · '): Object.entries(v).map(([k, x]) => k + ' ' + str(x)).join(' · ')): String(v);
+const norm = s => str(s).toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+const pal = ['#269bb3', '#b54e86', '#d98a22', '#527dc5', '#79a43a', '#e76a55', '#7f66b1', '#2b9a86', '#9b7448', '#b84861'];
+const safeColor = (s, k) => /^#[0-9a-f]{6}$/i.test(s || '') ? s: pal[k % pal.length];
+function ensureGroup(id, label, color) {
+    if (groupById.has(id))return groupById.get(id);
+    const j = groups.length;
+    groups.push({id, label: str(label) || str(id) || 'Other', color: safeColor(color, j), nodes: [], links: [], box: null});
+    groupById.set(id, j);
+    return j
+}
+for (const g of D.groups || [])ensureGroup(str(g.id), g.label, g.color);
+for (let i = 0; i < nd; i++) {
+    const n = N[i];
+    byId.set(str(n.id), i);
+    queries.push(norm([n.label, n.id, n.type].join(' ')));
+    if (n.x == null || n.y == null || !Number.isFinite(+ n.x) || !Number.isFinite(+ n.y))continue;
+    xs[i] = + n.x;
+    ys[i] = + n.y;
+    const j = ensureGroup(str(n.g), n.g, null);
+    groupIdx[i] = j;
+    active[i] = 1;
+    groups[j].nodes.push(i);
+    items.push(i)
+}
+const cross = [];
+for (const e of E) {
+    if (!Array.isArray(e) || !Number.isInteger(e[0]) || !Number.isInteger(e[1]) || !active[e[0]] || !active[e[1]])continue;
+    const i = edges.length;
+    edges.push(e);
+    ad[e[0]].push(i);
+    if (e[0] !== e[1])ad[e[1]].push(i);
+    if (groupIdx[e[0]] === groupIdx[e[1]])groups[groupIdx[e[0]]].links.push(i); else cross.push(i)
+}
+const degree = i => Math.max(0, Number(N[i].d) || ad[i].length);
+const deg95 = items.map(degree).sort((a, b) => a - b)[Math.floor(items.length * .95)] || 1;
+for (const i of items) {
+    const q = Math.log1p(degree(i)) / Math.max(1.5, Math.log1p(deg95));
+    rad[i] = Math.min(9.1, 1.02 + 1.95 * Math.pow(q, 1.7))
+}
+const labelRank = items.slice().sort((a, b) => degree(b) - degree(a) || a - b);
+function bounds(indices) {
+    let x0 = Infinity, y0 = Infinity, x1 = - Infinity, y1 = - Infinity;
+    for (const i of indices) {
+        x0 = Math.min(x0, xs[i]);
+        y0 = Math.min(y0, ys[i]);
+        x1 = Math.max(x1, xs[i]);
+        y1 = Math.max(y1, ys[i])
+    }
+    if (x0 === Infinity)return{x0: - 1, x1: 1, y0: - 1, y1: 1};
+    return{x0, x1, y0, y1}
+}
+
+// Index points spatially for hover and click picking.
+const allBox = bounds(items);
+for (const g of groups)g.box = bounds(g.nodes);
+const globalSpan = Math.max(1e-8, allBox.x1 - allBox.x0, allBox.y1 - allBox.y0);
+const bucketSize = globalSpan / Math.max(12, Math.ceil(Math.sqrt(items.length) / 1.5));
+const cells = new Map();
+function key(x, y) {
+    return x + ',' + y
+}
+for (const i of items) {
+    const k = key(Math.floor(xs[i] / bucketSize), Math.floor(ys[i] / bucketSize));
+    if (!cells.has(k))cells.set(k, []);
+    cells.get(k).push(i)
+}
+let W = 1, H = 1, pix = 1, s = 1, tx = 0, ty = 0, base = 1, minScale = 1, maxScale = 1, choice = - 1, hover = - 1, filter = - 1, showLabels = false, tick = 0, hTick = 0, visibleEdges = 24, legendOpen = innerWidth > 650, wasReady = false, groupIsFit = false;
+const positions = new Map();
+let press = null, gesture = null, downMoved = false;
+const create = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls)n.className = cls;
+    if (text != null)n.textContent = text;
+    return n
+};
+const btn = (txt, action, cls) => {
+    const n = create('button', cls, txt);
+    n.type = 'button';
+    n.addEventListener('click', action);
+    return n
+};
+function dot(color) {
+    const d = create('i', 'dot');
+    d.style.setProperty('--dot', color);
+    return d
+}
+function announce(t) {
+    $('live').textContent = t
+}
+
+// Maintain a transform between graph coordinates and screen coordinates.
+function fitValue(b, zoomMargin = 1) {
+    const left = W > 850 ? 25: 10, right = W > 850 ? 25: 10, top = H > 380 ? 36: 12, bottom = H > 380 ? 31: 12;
+    const span = Math.max((b.x1 - b.x0), b.y1 - b.y0, globalSpan * .0001);
+    const width = Math.max(b.x1 - b.x0, span * .14, globalSpan * .0001), height = Math.max(b.y1 - b.y0, span * .14, globalSpan * .0001);
+    const scale = Math.max(1e-12, Math.min((W - left - right) / width, (H - top - bottom) / height) * .94 * zoomMargin);
+    return{s: scale, tx: (W + left - right) / 2 - (b.x1 + b.x0) / 2 * scale, ty: (H + top - bottom) / 2 - (b.y1 + b.y0) / 2 * scale}
+}
+function hideTip() {
+    hover = - 1;
+    $('tip').hidden = true;
+    canvas.classList.remove('targeting');
+    highlightSoon()
+}
+function fit() {
+    const b = filter >= 0 ? groups[filter].box: allBox;
+    const v = fitValue(b);
+    s = Math.min(maxScale, Math.max(minScale, v.s));
+    tx = W / 2 - (b.x1 + b.x0) * s / 2;
+    ty = H / 2 + (H > 380 ? 3: 0) - (b.y1 + b.y0) * s / 2;
+    groupIsFit = true;
+    hideTip();
+    paintSoon()
+}
+function zoomAt(f, x = W / 2, y = H / 2) {
+    if (!Number.isFinite(f) || f <= 0)return;
+    const after = Math.min(maxScale, Math.max(minScale, s * f));
+    tx = x - (x - tx) * after / s;
+    ty = y - (y - ty) * after / s;
+    s = after;
+    groupIsFit = false;
+    hideTip();
+    paintSoon()
+}
+function resize() {
+    const rr = stage.getBoundingClientRect(), nw = Math.max(1, Math.round(rr.width)), nh = Math.max(1, Math.round(rr.height)), px = Math.min(2, devicePixelRatio || 1);
+    if (wasReady && nw === W && nh === H && px === pix)return;
+    const oldW = W, oldH = H, oldBase = base, ox = (W / 2 - tx) / s, oy = (H / 2 - ty) / s;
+    W = nw;
+    H = nh;
+    pix = px;
+    canvas.width = hi.width = Math.round(W * pix);
+    canvas.height = hi.height = Math.round(H * pix);
+    base = fitValue(allBox).s;
+    minScale = base * .22;
+    maxScale = base * 120;
+    if (!wasReady || groupIsFit)fit(); else {
+        s = Math.max(minScale, Math.min(maxScale, s / oldBase * base));
+        tx = W / 2 - ox * s;
+        ty = H / 2 - oy * s;
+        paintSoon()
+    }
+    wasReady = true
+}
+function paintSoon() {
+    if (!tick)tick = requestAnimationFrame(() => {
+        tick = 0;
+        paint()
+    })
+}
+function highlightSoon() {
+    if (!hTick)hTick = requestAnimationFrame(() => {
+        hTick = 0;
+        highlight()
+    })
+}
+const screenR = i => Math.max(.68, Math.min(19, rad[i] * Math.pow(Math.max(.2, s / base), .40) * (W < 620 ? .84: 1)));
+const pxX = i => xs[i] * s + tx, pxY = i => ys[i] * s + ty;
+function onView(x, y, m = 16) {
+    return x >= - m && x <= W + m && y >= - m && y <= H + m
+}
+function linkPath(c, j) {
+    const e = edges[j], x1 = pxX(e[0]), y1 = pxY(e[0]), x2 = pxX(e[1]), y2 = pxY(e[1]);
+    if ((x1 < 0 && x2 < 0) || (x1 > W && x2 > W) || (y1 < 0 && y2 < 0) || (y1 > H && y2 > H))return;
+    c.moveTo(x1, y1);
+    c.lineTo(x2, y2)
+}
+
+// Batch links and points by community to minimize Canvas state changes.
+function paint() {
+    ctx.setTransform(pix, 0, 0, pix, 0, 0);
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, W, H);
+    const z = s / base;
+    const dense = nd >= 6500;
+    const fading = filter >= 0;
+    ctx.lineCap = 'round';
+    ctx.lineWidth = Math.min(1.05, (dense ? .43: .56) * Math.pow(Math.max(.5, z), .18));
+    ctx.strokeStyle = '#566b75';
+    ctx.globalAlpha = fading ? .018: dense ? .105: .17;
+    ctx.beginPath();
+    for (const j of cross)linkPath(ctx, j);
+    ctx.stroke();
+    for (let k = 0; k < groups.length; k++) {
+        const g = groups[k];
+        ctx.globalAlpha = fading && filter !== k ? .018: dense ? .165: .23;
+        ctx.strokeStyle = g.color;
+        ctx.beginPath();
+        for (const j of g.links)linkPath(ctx, j);
+        ctx.stroke()
+    }
+    for (let k = 0; k < groups.length; k++) {
+        const g = groups[k];
+        ctx.fillStyle = g.color;
+        ctx.globalAlpha = fading && filter !== k ? .055: .91;
+        ctx.beginPath();
+        for (const i of g.nodes) {
+            const x = pxX(i), y = pxY(i);
+            if (!onView(x, y))continue;
+            const r = screenR(i);
+            ctx.moveTo(x + r, y);
+            ctx.arc(x, y, r, 0, Math.PI * 2)
+        }
+        ctx.fill()
+    }
+    ctx.globalAlpha = 1;
+    if (showLabels)drawLabels();
+    $('zoomval').textContent = Math.round(s / base * 100) + '%';
+    $('plus').disabled = s >= maxScale * .999;
+    $('minus').disabled = s <= minScale * 1.001;
+    highlight()
+}
+function drawLabels() {
+    const occupied = [], color = '#3a484e';
+    ctx.font = '600 11px "Segoe UI",Arial,sans-serif';
+    ctx.textBaseline = 'middle';
+    let q = 0;
+    const limit = Math.max(5, Math.min(45, Math.floor(W * H / 21000)));
+    for (const i of labelRank) {
+        if (q >= limit)break;
+        if (filter >= 0 && filter !== groupIdx[i])continue;
+        const x = pxX(i) + screenR(i) + 3, y = pxY(i);
+        if (!onView(x, y, - 9))continue;
+        const label = str(N[i].label || N[i].id).slice(0, 42), w = ctx.measureText(label).width;
+        if (x + w > W - 10 || occupied.some(b => x < b[2] + 5 && x + w > b[0] - 4 && y < b[3] + 9 && y > b[1] - 8))continue;
+        occupied.push([x, y - 6, x + w, y + 6]);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#ffffffef';
+        ctx.strokeText(label, x, y);
+        ctx.fillStyle = color;
+        ctx.fillText(label, x, y);
+        q++
+    }
+}
+
+// Redraw the selected neighborhood without repainting the base graph.
+function highlight() {
+    hctx.setTransform(pix, 0, 0, pix, 0, 0);
+    hctx.clearRect(0, 0, W, H);
+    const i = hover >= 0 ? hover: choice;
+    if (i < 0 || !active[i])return;
+    const g = groups[groupIdx[i]], x = pxX(i), y = pxY(i);
+    hctx.lineWidth = 1.05;
+    hctx.strokeStyle = g.color;
+    hctx.globalAlpha = .60;
+    hctx.beginPath();
+    for (const j of ad[i])linkPath(hctx, j);
+    hctx.stroke();
+    hctx.globalAlpha = 1;
+    hctx.fillStyle = g.color;
+    hctx.strokeStyle = '#fff';
+    hctx.lineWidth = .7;
+    hctx.beginPath();
+    const seen = new Set();
+    for (const j of ad[i]) {
+        const e = edges[j], k = e[0] === i ? e[1]: e[0];
+        if (seen.has(k))continue;
+        seen.add(k);
+        const a = pxX(k), b = pxY(k);
+        if (!onView(a, b))continue;
+        const r = Math.max(1.8, screenR(k));
+        hctx.moveTo(a + r, b);
+        hctx.arc(a, b, r, 0, 2 * Math.PI)
+    }
+    hctx.fill();
+    hctx.stroke();
+    const r = screenR(i) + 3;
+    hctx.beginPath();
+    hctx.arc(x, y, r, 0, Math.PI * 2);
+    hctx.strokeStyle = '#fff';
+    hctx.lineWidth = 4;
+    hctx.stroke();
+    hctx.lineWidth = 1.6;
+    hctx.strokeStyle = '#243c46';
+    hctx.stroke();
+    hctx.beginPath();
+    hctx.arc(x, y, Math.max(2, r - 2.5), 0, Math.PI * 2);
+    hctx.fillStyle = g.color;
+    hctx.fill()
+}
+
+// Check only the nearby cells while preserving zoom-dependent hit targets.
+function nearest(x, y) {
+    if (!nd)return - 1;
+    const wx = (x - tx) / s, wy = (y - ty) / s, reach = 22 / s;
+    let best = - 1, score = Infinity, dist = Infinity;
+    const ax = Math.floor((wx - reach) / bucketSize), bx = Math.floor((wx + reach) / bucketSize), ay = Math.floor((wy - reach) / bucketSize), by = Math.floor((wy + reach) / bucketSize);
+    const scan = i => {
+        if (filter >= 0 && groupIdx[i] !== filter)return;
+        const dx = pxX(i) - x, dy = pxY(i) - y, d = Math.hypot(dx, dy), r = screenR(i);
+        if (d > r + 3.5)return;
+        const v = Math.max(0, d - r * .42);
+        if (v < score || v === score && d < dist) {
+            score = v;
+            dist = d;
+            best = i
+        }
+    };
+    if ((bx - ax + 1) * (by - ay + 1) > 80) {
+        for (const i of items)scan(i)
+    } else {
+        for (let a = ax; a <= bx; a++)for (let b = ay; b <= by; b++) {
+            const cell = cells.get(key(a, b));
+            if (cell)for (const i of cell)scan(i)
+        }
+    }
+    return best
+}
+function hoverAt(x, y) {
+    const i = nearest(x, y);
+    if (i < 0) {
+        if (hover !== - 1)hideTip();
+        return
+    }
+    const t = $('tip');
+    if (i !== hover || t.hidden) {
+        hover = i;
+        t.replaceChildren(create('strong', '', N[i].label || N[i].id), create('small', '', str(N[i].type) + ' · ' + num(ad[i].length) + ' displayed links'));
+        t.hidden = false;
+        canvas.classList.add('targeting');
+        highlightSoon()
+    }
+    const r = t.getBoundingClientRect();
+    t.style.left = Math.max(2, Math.min(W - r.width - 3, x + 13)) + 'px';
+    t.style.top = Math.max(2, Math.min(H - r.height - 3, y + 13)) + 'px'
+}
+
+// Handle pointer input for drag, pinch, and record selection.
+function locate(e) {
+    const b = canvas.getBoundingClientRect();
+    return{x: e.clientX - b.left, y: e.clientY - b.top}
+}
+function pair() {
+    if (positions.size !== 2)return null;
+    const[a, b] = [...positions.values()];
+    return{x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, d: Math.max(1, Math.hypot(a.x - b.x, a.y - b.y))}
+}
+canvas.addEventListener('pointerdown', e => {
+    if (e.button !== 0 && e.pointerType !== 'touch')return;
+    const p = locate(e);
+    canvas.focus({preventScroll: true});
+    closeSearch();
+    hideTip();
+    canvas.setPointerCapture(e.pointerId);
+    positions.set(e.pointerId, p);
+    if (positions.size === 1) {
+        press = {...p};
+        gesture = null;
+        downMoved = false
+    } else {
+        gesture = pair();
+        downMoved = true
+    }
+});
+canvas.addEventListener('pointermove', e => {
+    const p = locate(e);
+    if (!positions.has(e.pointerId)) {
+        if (e.pointerType !== 'touch')hoverAt(p.x, p.y);
+        return
+    }
+    const prev = positions.get(e.pointerId);
+    positions.set(e.pointerId, p);
+    if (positions.size === 2) {
+        const cur = pair();
+        if (cur && gesture) {
+            const factor = cur.d / gesture.d, ss = Math.max(minScale, Math.min(maxScale, s * factor));
+            tx = cur.x - (gesture.x - tx) * ss / s;
+            ty = cur.y - (gesture.y - ty) * ss / s;
+            s = ss;
+            groupIsFit = false;
+            paintSoon()
+        }
+        gesture = cur;
+        return
+    }
+    if (positions.size !== 1)return;
+    if (!downMoved && press && Math.hypot(p.x - press.x, p.y - press.y) < 3)return;
+    const start = downMoved ? prev: (press || prev);
+    downMoved = true;
+    canvas.classList.add('dragging');
+    tx += p.x - start.x;
+    ty += p.y - start.y;
+    groupIsFit = false;
+    paintSoon()
+});
+function release(e, canceled) {
+    if (!positions.has(e.pointerId))return;
+    const p = locate(e);
+    positions.delete(e.pointerId);
+    if (canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);
+    if (!positions.size) {
+        canvas.classList.remove('dragging');
+        if (!downMoved && !canceled) {
+            const n = nearest(p.x, p.y);
+            if (n >= 0)select(n, false); else {
+                clearSelection();
+                hideTip()
+            }
+        }
+        press = null;
+        gesture = null
+    } else {
+        gesture = null;
+        press = [...positions.values()][0];
+        downMoved = true
+    }
+}
+canvas.addEventListener('pointerup', e => release(e, false));
+canvas.addEventListener('pointercancel', e => release(e, true));
+canvas.addEventListener('pointerleave', () => {
+    if (!positions.size)hideTip()
+});
+canvas.addEventListener('dblclick', e => {
+    const p = locate(e);
+    zoomAt(1.7, p.x, p.y)
+});
+canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    const p = locate(e), delta = e.deltaY * (e.deltaMode === 1 ? 16: e.deltaMode === 2 ? H: 1);
+    zoomAt(Math.exp(- Math.max(- 300, Math.min(300, delta)) * .0019), p.x, p.y)
+}, {passive: false});
+
+// Use DOM text nodes for graph labels and evidence.
+function clearSelection() {
+    choice = - 1;
+    visibleEdges = 24;
+    $('inspector').hidden = true;
+    highlightSoon()
+}
+function select(i, center) {
+    if (!Number.isInteger(i) || !active[i])return;
+    if (filter >= 0 && groupIdx[i] !== filter)setGroup(- 1, false);
+    choice = i;
+    visibleEdges = 24;
+    hideTip();
+    closeHelpBox();
+    closeSearch();
+    if (center) {
+        s = Math.max(s, Math.min(maxScale, base * 2.5));
+        tx = (W > 650 ? W * .43: W * .5) - xs[i] * s;
+        ty = (W > 650 ? H * .5: H * .34) - ys[i] * s;
+        groupIsFit = false
+    }
+    renderInspector();
+    announce(str(N[i].label) + ' selected');
+    paintSoon()
+}
+function renderInspector() {
+    const p = $('inspector');
+    if (choice < 0) {
+        p.hidden = true;
+        return
+    }
+    const n = N[choice], g = groups[groupIdx[choice]], line = create('div', 'topline'), c = btn('×', () => {
+        clearSelection();
+        canvas.focus()
+    }, 'icon');
+    c.setAttribute('aria-label', 'Close record');
+    line.append(dot(g.color), create('small', '', str(n.type) || 'Record'), c);
+    p.replaceChildren(line, create('h2', 'title', n.label || n.id));
+    p.append(create('p', 'nmeta', g.label + ' · ' + str(n.id)));
+    if (n.detail)p.append(create('p', 'detail', str(n.detail)));
+    if (n.source) {
+        const src = create('p', 'src');
+        src.append(create('strong', '', 'Source '), document.createTextNode(str(n.source)));
+        p.append(src)
+    }
+    const head = create('div', 'connhead');
+    head.append(create('h3', '', 'Connections'), create('span', '', num(ad[choice].length) + ' displayed'));
+    p.append(head);
+    const lists = create('div', 'links');
+    if (!ad[choice].length)lists.append(create('p', 'muted', 'This record has no connection in this view.'));
+    p.append(lists);
+    p.hidden = false;
+    p.scrollTop = 0;
+    let shown = 0;
+    const more = btn('Show more connections', () => {
+        visibleEdges += 24;
+        appendRows()
+    }, 'action more');
+    p.append(more);
+    function appendRows() {
+        const end = Math.min(ad[choice].length, visibleEdges);
+        for (; shown < end; shown++) {
+            const e = edges[ad[choice][shown]], out = e[0] === choice, k = out ? e[1]: e[0], other = N[k], de = create('details', 'edge'), su = create('summary'), txt = create('span');
+            txt.append(create('strong', '', str(other.label || other.id)), create('small', '', (out ? '→ ': '← ') + str(e[2] || 'Related')));
+            su.append(txt);
+            const evidence = create('div', 'ev');
+            evidence.append(document.createTextNode(str(e[3]) || 'Evidence text was not supplied for this connection.'), btn('Open record', () => select(k, true), 'action'));
+            de.append(su, evidence);
+            lists.append(de)
+        }
+        more.hidden = shown >= ad[choice].length
+    }
+    appendRows()
+}
+
+// Wire the community legend and focus behavior.
+const groupRows = new Map();
+function buildLegend() {
+    const b = $('legendbody'), strip = $('strip');
+    b.replaceChildren();
+    strip.replaceChildren();
+    for (const g of groups.filter(g => g.nodes.length).sort((a, b) => b.nodes.length - a.nodes.length || a.label.localeCompare(b.label))) {
+        const k = groupById.get(g.id), r = btn('', () => setGroup(filter === k ? - 1: k, true), 'groupbtn');
+        r.title = g.label;
+        r.setAttribute('aria-pressed', String(k === filter));
+        r.append(dot(g.color), create('span', 'gname', g.label), create('span', 'gcount', num(g.nodes.length)));
+        b.append(r);
+        groupRows.set(k, r);
+        if (strip.children.length < 6)strip.append(dot(g.color))
+    }
+    legendState()
+}
+function legendState() {
+    $('legendToggle').setAttribute('aria-expanded', String(legendOpen));
+    $('legendbody').hidden = !legendOpen;
+    $('caret').textContent = legendOpen ? '⌄': '›';
+    $('strip').hidden = legendOpen || filter >= 0;
+    $('resetGroup').hidden = filter < 0;
+    $('groupTitle').textContent = filter >= 0 ? 'Group focus': 'Groups'
+}
+function setGroup(k, refit) {
+    filter = k;
+    if (choice >= 0 && k >= 0 && groupIdx[choice] !== k)clearSelection();
+    for (const[j, b] of groupRows)b.setAttribute('aria-pressed', String(j === k));
+    legendState();
+    hideTip();
+    if (refit)fit(); else paintSoon();
+    announce(k >= 0 ? groups[k].label + ' group': 'All groups')
+}
+$('legendToggle').onclick = () => {
+    legendOpen = !legendOpen;
+    legendState()
+};
+$('resetGroup').onclick = () => setGroup(- 1, true);
+
+// Rank search matches using exact identifiers and label prefixes.
+let results = [], cursor = - 1;
+const search = $('query');
+function closeSearch() {
+    $('matches').hidden = true;
+    search.setAttribute('aria-expanded', 'false');
+    search.removeAttribute('aria-activedescendant');
+    cursor = - 1
+}
+function searchMatches() {
+    const q = norm(search.value);
+    if (!q) {
+        closeSearch();
+        return
+    }
+    const tokens = q.split(' '), rs = [];
+    for (const i of items) {
+        if (!tokens.every(t => queries[i].includes(t)))continue;
+        const label = norm(N[i].label), id = norm(N[i].id), tail = norm(str(N[i].id).split(':').pop());
+        let rank = (label === q || id === q || tail === q ? 30: 0) + (label.startsWith(q) ? 8: 0) + (tail.startsWith(q) ? 5: 0);
+        rs.push([rank, i])
+    }
+    rs.sort((a, b) => b[0] - a[0] || degree(b[1]) - degree(a[1]) || a[1] - b[1]);
+    results = rs.slice(0, 10).map(a => a[1]);
+    const list = $('matches');
+    list.replaceChildren();
+    cursor = - 1;
+    search.removeAttribute('aria-activedescendant');
+    for (let j = 0; j < results.length; j++) {
+        const i = results[j], n = N[i], g = groups[groupIdx[i]], row = btn('', () => select(i, true), 'opt'), t = create('span');
+        row.id = 'match-' + j;
+        row.tabIndex = - 1;
+        row.setAttribute('role', 'option');
+        row.setAttribute('aria-selected', 'false');
+        t.append(create('strong', '', n.label || n.id), create('small', '', str(n.type) + ' · ' + g.label));
+        row.append(dot(g.color), t);
+        list.append(row)
+    }
+    if (!results.length)list.append(create('p', 'muted', 'No matching records in this map.'));
+    list.hidden = false;
+    search.setAttribute('aria-expanded', 'true')
+}
+function setCursor(k) {
+    if (!results.length)return;
+    cursor = (k + results.length) % results.length;
+    for (let j = 0; j < results.length; j++)$('match-' + j).setAttribute('aria-selected', String(j === cursor));
+    search.setAttribute('aria-activedescendant', 'match-' + cursor);
+    $('match-' + cursor).scrollIntoView({block: 'nearest'})
+}
+let searchTimer;
+search.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(searchMatches, 55)
+});
+search.addEventListener('focus', () => {
+    if (search.value)searchMatches()
+});
+search.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        closeSearch();
+        canvas.focus();
+        return
+    }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        if ($('matches').hidden)searchMatches();
+        setCursor(cursor + (e.key === 'ArrowDown' ? 1: - 1))
+    }
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        if ($('matches').hidden)searchMatches();
+        if (results.length) {
+            select(results[Math.max(0, cursor)], true);
+            canvas.focus()
+        }
+    }
+});
+document.addEventListener('pointerdown', e => {
+    if (!e.target.closest('.searchwrap'))closeSearch()
+});
+function labels() {
+    showLabels = !showLabels;
+    $('labels').setAttribute('aria-pressed', String(showLabels));
+    paintSoon()
+}
+function closeHelpBox() {
+    $('helpbox').hidden = true;
+    $('help').setAttribute('aria-expanded', 'false')
+}
+$('help').onclick = () => {
+    const open = $('helpbox').hidden;
+    $('helpbox').hidden = !open;
+    $('help').setAttribute('aria-expanded', String(open))
+};
+$('closeHelp').onclick = closeHelpBox;
+$('plus').onclick = () => zoomAt(1.38);
+$('minus').onclick = () => zoomAt(1 / 1.38);
+$('fit').onclick = fit;
+$('labels').onclick = labels;
+document.addEventListener('keydown', e => {
+    if (e.ctrlKey || e.metaKey || e.altKey)return;
+    if (e.key === 'Escape') {
+        closeSearch();
+        closeHelpBox();
+        clearSelection();
+        hideTip();
+        return
+    }
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')return;
+    let ok = true;
+    switch (e.key.toLowerCase()){case '/': search.focus(); search.select(); break; case 'f': fit(); break; case 'l': labels(); break; case '+': case '=': zoomAt(1.3); break; case '-': zoomAt(1 / 1.3); break; case 'arrowleft': tx += 42; break; case 'arrowright': tx -= 42; break; case 'arrowup': ty += 42; break; case 'arrowdown': ty -= 42; break; default: ok = false}
+    if (ok) {
+        e.preventDefault();
+        if (e.key.startsWith('Arrow')) {
+            groupIsFit = false;
+            hideTip();
+            paintSoon()
+        }
+    }
+});
+const m = D.meta || {};
+$('scope').textContent = [m.scope || m.description || '', num(items.length) + ' visible records and ' + num(edges.length) + ' evidence links. Dot size reflects connectivity. Colors identify groups.'].map(str).filter(Boolean).join(' ');
+$('recordCount').textContent = num(items.length);
+$('linkCount').textContent = num(edges.length);
+$('empty').hidden = !!items.length;
+buildLegend();
+resize();
+if (typeof ResizeObserver !== 'undefined')new ResizeObserver(resize).observe(stage); else window.addEventListener('resize', resize);
+</script></body></html>
